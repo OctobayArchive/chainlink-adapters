@@ -3,13 +3,14 @@ const createRequest = require('../index.js').createRequest
 
 describe('createRequest', () => {
   const jobID = '1'
+  const testPrId = 'MDExOlB1bGxSZXF1ZXN0NDc2NTg4Nzg2'
+  const testGitHubUser = 'mktcode'
 
   context('successful calls', () => {
+    // MDExOlB1bGxSZXF1ZXN0NDc2NTg4Nzg2 will fail once this pr gets too old
     const requests = [
-      { name: 'id not supplied', testData: { data: { base: 'ETH', quote: 'USD' } } },
-      { name: 'base/quote', testData: { id: jobID, data: { base: 'ETH', quote: 'USD' } } },
-      { name: 'from/to', testData: { id: jobID, data: { from: 'ETH', to: 'USD' } } },
-      { name: 'coin/market', testData: { id: jobID, data: { coin: 'ETH', market: 'USD' } } }
+      { name: 'id not supplied', testData: { data: { githubUser: testGitHubUser, prId: testPrId } } },
+      { name: 'check pull request', testData: { id: jobID, data: { githubUser: testGitHubUser, prId: testPrId } } }
     ]
 
     requests.forEach(req => {
@@ -30,10 +31,10 @@ describe('createRequest', () => {
     const requests = [
       { name: 'empty body', testData: {} },
       { name: 'empty data', testData: { data: {} } },
-      { name: 'base not supplied', testData: { id: jobID, data: { quote: 'USD' } } },
-      { name: 'quote not supplied', testData: { id: jobID, data: { base: 'ETH' } } },
-      { name: 'unknown base', testData: { id: jobID, data: { base: 'not_real', quote: 'USD' } } },
-      { name: 'unknown quote', testData: { id: jobID, data: { base: 'ETH', quote: 'not_real' } } }
+      { name: 'githubUser not supplied', testData: { id: jobID, data: { prId: testPrId } } },
+      { name: 'prId not supplied', testData: { id: jobID, data: { githubUser: testGitHubUser } } },
+      { name: 'unknown githubUser', testData: { id: jobID, data: { GitHub: '', prId: testPrId } } },
+      { name: 'unknown prId', testData: { id: jobID, data: { githubUser: testGitHubUser, prId: '' } } }
     ]
 
     requests.forEach(req => {
