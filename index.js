@@ -1,5 +1,6 @@
 require('dotenv').config()
 const { Requester, Validator } = require('@chainlink/external-adapter')
+const { getPullRequestScore, validatePullRequest } = require('./helpers')
 
 // Define custom error scenarios for the API.
 // Return true for the adapter to retry.
@@ -13,44 +14,84 @@ const customError = (data) => {
 // with a Boolean value indicating whether or not they
 // should be required.
 const customParams = {
-  base: ['base', 'from', 'coin'],
-  quote: ['quote', 'to', 'market'],
-  endpoint: false
+  githubUser: ['githubUser'],
+  prId: ['prId']
 }
 
 const createRequest = (input, callback) => {
   // The Validator helps you validate the Chainlink request data
   const validator = new Validator(callback, input, customParams)
   const jobRunID = validator.validated.id
-  const endpoint = validator.validated.data.endpoint || 'price'
-  const url = `https://min-api.cryptocompare.com/data/${endpoint}`
-  const fsym = validator.validated.data.base.toUpperCase()
-  const tsyms = validator.validated.data.quote.toUpperCase()
+  const url = 'https://api.github.com/graphql'
+  const githubUser = validator.validated.data.githubUser
+  const prId = validator.validated.data.prId
 
-  const params = {
-    fsym,
-    tsyms
+  const headers = {
+    Authorization: 'bearer ' + process.env.GITHUB_APP_ACCESS_TOKEN
   }
 
-  // This is where you would add method and headers
-  // you can add method like GET or POST and add it to the config
-  // The default is GET requests
-  // method = 'get'
-  // headers = 'headers.....'
+  // Axios config
   const config = {
     url,
-    params
+    headers,
+    method: 'POST',
+    data: {
+      query: `query {
+  node (id: "${prId}") {
+    id
+    ... on PullRequest {
+      id
+      mergedAt
+      author {
+        ... on User {
+          login,
+          createdAt,
+          followers {
+            totalCount
+          }
+        }
+      }
+      repository {
+        owner {
+          login
+        }
+        createdAt,
+        stargazers {
+          totalCount
+        }
+        forks {
+          totalCount
+        }
+      }
+    }
+  }
+}`
+    }
   }
 
   // The Requester allows API calls be retry in case of timeout
   // or connection failure
   Requester.request(config, customError)
     .then(response => {
-      // It's common practice to store the desired value at the top-level
-      // result key. This allows different adapters to be compatible with
-      // one another.
-      response.data.result = Requester.validateResultNumber(response.data, [tsyms])
-      callback(response.status, Requester.success(jobRunID, response))
+      // remove redundant object node
+      response.data = response.data.data
+      // rename node to pullRequest in response object
+      response.data.pullRequest = response.data.node
+      delete response.data.node
+
+      // calculate pull request score and check if pull request is valid (repo owner / merge data)
+      response.data.pullRequest.score = getPullRequestScore(response.data.pullRequest, githubUser)
+      const pullRequestValidationError = validatePullRequest(response.data.pullRequest, githubUser)
+
+      if (pullRequestValidationError) {
+        // Error 1: GitHub user and repository owner are the same
+        // Error 2: Pull request was merged too long ago
+        // Error 3: Score is too low (= 0)
+        callback(500, Requester.errored(jobRunID, { pullRequestValidationError }))
+      } else {
+        response.data.result = response.data.pullRequest.score
+        callback(response.status, Requester.success(jobRunID, response))
+      }
     })
     .catch(error => {
       callback(500, Requester.errored(jobRunID, error))
