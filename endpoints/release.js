@@ -1,6 +1,5 @@
 require('dotenv').config()
 const { Requester, Validator } = require('@chainlink/external-adapter')
-const { getPullRequestScore, validatePullRequest } = require('./helpers')
 
 // Define custom error scenarios for the API.
 // Return true for the adapter to retry.
@@ -15,7 +14,7 @@ const customError = (data) => {
 // should be required.
 const customParams = {
   githubUser: ['githubUser'],
-  prId: ['prId']
+  issueId: ['issueId']
 }
 
 const createRequest = (input, callback) => {
@@ -24,7 +23,7 @@ const createRequest = (input, callback) => {
   const jobRunID = validator.validated.id
   const url = 'https://api.github.com/graphql'
   const githubUser = validator.validated.data.githubUser
-  const prId = validator.validated.data.prId
+  const issueId = validator.validated.data.issueId
 
   const headers = {
     Authorization: 'bearer ' + process.env.GITHUB_APP_ACCESS_TOKEN
@@ -37,35 +36,16 @@ const createRequest = (input, callback) => {
     method: 'POST',
     data: {
       query: `query {
-  node (id: "${prId}") {
-    id
-    ... on PullRequest {
-      id
-      mergedAt
-      author {
-        ... on User {
-          login,
-          createdAt,
-          followers {
-            totalCount
+        node (id: "${issueId}") {
+          ... on Issue {
+            repository {
+              owner {
+                login
+              }
+            }
           }
         }
-      }
-      repository {
-        owner {
-          login
-        }
-        createdAt,
-        stargazers {
-          totalCount
-        }
-        forks {
-          totalCount
-        }
-      }
-    }
-  }
-}`
+      }`
     }
   }
 
@@ -75,21 +55,13 @@ const createRequest = (input, callback) => {
     .then(response => {
       // remove redundant object node
       response.data = response.data.data
-      // rename node to pullRequest in response object
-      response.data.pullRequest = response.data.node
-      delete response.data.node
 
-      // calculate pull request score and check if pull request is valid (repo owner / merge data)
-      response.data.pullRequest.score = getPullRequestScore(response.data.pullRequest, githubUser)
-      const pullRequestValidationError = validatePullRequest(response.data.pullRequest, githubUser)
-
-      if (pullRequestValidationError) {
-        // Error 1: GitHub user and repository owner are the same
-        // Error 2: Pull request was merged too long ago
-        // Error 3: Score is too low (= 0)
-        callback(500, Requester.errored(jobRunID, { pullRequestValidationError }))
+      if (response.data.node.repository.owner.login !== githubUser) {
+        // Error 1: GitHub user does not own the issue's repository
+        callback(500, Requester.errored(jobRunID, { registrationError: `Repository of issue not owned by ${githubUser}.` }))
       } else {
-        response.data.result = response.data.pullRequest.score
+        delete response.data.node
+        response.data.result = true
         callback(response.status, Requester.success(jobRunID, response))
       }
     })

@@ -1,4 +1,6 @@
-const createRequest = require('./index').createRequest
+const createRegisterRequest = require('./endpoints/register').createRequest
+const createReleaseRequest = require('./endpoints/release').createRequest
+const createClaimRequest = require('./endpoints/claim').createRequest
 
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -7,9 +9,25 @@ const port = process.env.EA_PORT || 8080
 
 app.use(bodyParser.json())
 
-app.post('/', (req, res) => {
+app.post('/register', (req, res) => {
   console.log('POST Data: ', req.body)
-  createRequest(req.body, (status, result) => {
+  createRegisterRequest(req.body, (status, result) => {
+    console.log('Result: ', result)
+    res.status(status).json(result)
+  })
+})
+
+app.post('/release', (req, res) => {
+  console.log('POST Data: ', req.body)
+  createReleaseRequest(req.body, (status, result) => {
+    console.log('Result: ', result)
+    res.status(status).json(result)
+  })
+})
+
+app.post('/claim', (req, res) => {
+  console.log('POST Data: ', req.body)
+  createClaimRequest(req.body, (status, result) => {
     console.log('Result: ', result)
     res.status(status).json(result)
   })
