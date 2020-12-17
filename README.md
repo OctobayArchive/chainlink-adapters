@@ -1,13 +1,55 @@
-# Chainlink NodeJS External Adapter for OctoBay: Claim Pull Requests
+# Chainlink NodeJS External Adapter for OctoBay
 
 Template: https://github.com/thodges-gh/CL-EA-NodeJS-Template
 
-## Input Params
+## /register
+
+### Input Params
+
+- `githubUser`: The GitHub user trying to register
+- `ethAccount`: The ETH account the user wants to connect to
+
+### Output
+
+```
+{
+  "jobRunID": 0,
+  "data": {
+    "result": true
+  },
+  "result": true,
+  "statusCode": 200
+}
+```
+
+## /release
+
+### Input Params
+
+- `githubUser`: The GitHub user that owns the issue and wants to release its deposits
+- `issueId`: The GrapQL node ID of the issue
+
+### Output
+
+```
+{
+  "jobRunID": 0,
+  "data": {
+    "result": true
+  },
+  "result": true,
+  "statusCode": 200
+}
+```
+
+## /claim
+
+### Input Params
 
 - `githubUser`: The GitHub user trying to claim the pull request
-- `prId`: The graphql node ID of the pull request
+- `prId`: The GrapQL node ID of the pull request
 
-## Output
+### Output
 
 ```
 {
@@ -27,7 +69,7 @@ Template: https://github.com/thodges-gh/CL-EA-NodeJS-Template
 }
 ```
 
-## Install Locally
+# Install Locally
 
 Install dependencies:
 
@@ -35,7 +77,7 @@ Install dependencies:
 yarn
 ```
 
-### Test
+## Test
 
 Run the local tests:
 
@@ -45,14 +87,21 @@ yarn test
 
 Natively run the application (defaults to port 8080):
 
-### Run
+## Run
 
 ```bash
 yarn start
 ```
 
-## Call the external adapter/API server
+## Call
 
 ```bash
-curl -X POST -H "content-type:application/json" "http://localhost:8080/" --data '{ "id": 0, "data": { "githubUser": "mktcode", "prId": "MDExOlB1bGxSZXF1ZXN0NDc2NTg4Nzg2" } }'
+# register
+curl -X POST -H "content-type:application/json" "http://localhost:8080/register" --data '{ "id": 0, "data": { "githubUser": "mktcode", "ethAccount": "0x2771..." } }'
+
+# release
+curl -X POST -H "content-type:application/json" "http://localhost:8080/release" --data '{ "id": 0, "data": { "githubUser": "mktcode", "issueId": "MDExOlB..." } }'
+
+# claim
+curl -X POST -H "content-type:application/json" "http://localhost:8080/claim" --data '{ "id": 0, "data": { "githubUser": "mktcode", "prId": "MDExOlB..." } }'
 ```
