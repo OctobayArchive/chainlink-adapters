@@ -9,15 +9,15 @@ Template: https://github.com/thodges-gh/CL-EA-NodeJS-Template
 
 ## Output
 
-```json
+```
 {
   "jobRunID": 0,
   "data": {
     "pullRequest": {
       "id": "MDExOlB1bGxSZXF1ZXN0NDc2NTg4Nzg2",
       "mergedAt": "2020-09-04T15:24:16Z",
-      "author": [Object],
-      "repository": [Object],
+      "author": { ... },
+      "repository": { ... },
       "score": 43
     },
     "result": 43
