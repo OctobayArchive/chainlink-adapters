@@ -1,3 +1,4 @@
+require('dotenv').config()
 const { Requester, Validator } = require('@chainlink/external-adapter')
 
 // Define custom error scenarios for the API.
