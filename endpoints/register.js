@@ -14,7 +14,7 @@ const customError = (data) => {
 // should be required.
 const customParams = {
   githubUser: ['githubUser'],
-  ethAccount: ['ethAccount']
+  ethAddress: ['ethAddress']
 }
 
 const createRequest = (input, callback) => {
@@ -23,7 +23,7 @@ const createRequest = (input, callback) => {
   const jobRunID = validator.validated.id
   const url = 'https://api.github.com/graphql'
   const githubUser = validator.validated.data.githubUser
-  const ethAccount = validator.validated.data.ethAccount
+  const ethAddress = validator.validated.data.ethAddress
 
   const headers = {
     Authorization: 'bearer ' + process.env.GITHUB_APP_ACCESS_TOKEN
@@ -36,7 +36,7 @@ const createRequest = (input, callback) => {
     method: 'POST',
     data: {
       query: `query {
-        repository(owner: "${githubUser}", name: "${ethAccount}") {
+        repository(owner: "${githubUser}", name: "${ethAddress}") {
           name
         }
       }`
@@ -52,7 +52,7 @@ const createRequest = (input, callback) => {
 
       if (!response.data.repository) {
         // Error 1: Repository not found
-        callback(500, Requester.errored(jobRunID, { registrationError: `Repository (${ethAccount}) not found.` }))
+        callback(500, Requester.errored(jobRunID, { registrationError: `Repository (${ethAddress}) not found.` }))
       } else {
         delete response.data.repository
         response.data.result = true
