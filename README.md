@@ -68,6 +68,11 @@ Template: https://github.com/thodges-gh/CL-EA-NodeJS-Template
   "statusCode": 200
 }
 ```
+# .env
+
+```
+GITHUB_APP_ACCESS_TOKEN=...
+```
 
 # Install Locally
 
