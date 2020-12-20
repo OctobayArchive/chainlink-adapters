@@ -1,0 +1,16 @@
+{
+  "name": "OctoBay Claim",
+  "initiators": [
+    {
+      "type": "runlog",
+      "params": {
+        "address": "YOUR_ORACLE_CONTRACT_ADDRESS"
+      }
+    }
+  ],
+  "tasks": [
+    { "type": "octobay-claim" },
+    { "type": "ethuint256" },
+    { "type": "ethtx" }
+  ]
+}

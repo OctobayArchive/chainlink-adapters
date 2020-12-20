@@ -1,0 +1,16 @@
+{
+  "name": "OctoBay Release",
+  "initiators": [
+    {
+      "type": "runlog",
+      "params": {
+        "address": "YOUR_ORACLE_CONTRACT_ADDRESS"
+      }
+    }
+  ],
+  "tasks": [
+    { "type": "octobay-release" },
+    { "type": "ethbool" },
+    { "type": "ethtx" }
+  ]
+}
