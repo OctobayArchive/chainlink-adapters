@@ -23,7 +23,7 @@ const createRequest = (input, callback) => {
   const jobRunID = validator.validated.id
   const url = 'https://api.github.com/graphql'
   const githubUser = validator.validated.data.githubUser
-  const ethAddress = validator.validated.data.ethAddress
+  const ethAddress = '0x' + BigInt(validator.validated.data.ethAddress).toString(16).padStart(40, '0')
 
   const headers = {
     Authorization: 'bearer ' + process.env.GITHUB_APP_ACCESS_TOKEN
