@@ -35,6 +35,7 @@ const getPullRequestScore = (pullRequest, githubUser) => {
 }
 
 const validatePullRequest = (pullRequest, githubUser) => {
+  const maxPrAge = Number(process.env.MAX_PULL_REQUEST_MERGE_AGE) || 30
   const repoOwner = pullRequest.repository.owner.login
   const mergeAge = getAge(pullRequest.mergedAt)
 
@@ -42,7 +43,7 @@ const validatePullRequest = (pullRequest, githubUser) => {
     return 1
   }
 
-  if (mergeAge > process.env.MAX_PULL_REQUEST_MERGE_AGE) {
+  if (mergeAge > maxPrAge) {
     return 2
   }
 
