@@ -1,0 +1,16 @@
+{
+  "name": "OctoBay GraphQL Bool",
+  "initiators": [
+    {
+      "type": "runlog",
+      "params": {
+        "address": "YOUR_ORACLE_CONTRACT_ADDRESS"
+      }
+    }
+  ],
+  "tasks": [
+    { "type": "octobay-graphql" },
+    { "type": "ethuint256" },
+    { "type": "ethtx" }
+  ]
+}

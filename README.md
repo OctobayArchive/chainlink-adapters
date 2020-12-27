@@ -68,10 +68,40 @@ Template: https://github.com/thodges-gh/CL-EA-NodeJS-Template
   "statusCode": 200
 }
 ```
+
+## /graphql
+
+### Input Params
+
+- `nodeId`: The GitHub GrapQL node ID
+- `nodeType`: The GitHub GrapQL node type
+- `nodePath`: The GitHub GrapQL node path
+
+### Output
+
+```
+{
+  "jobRunID": 0,
+  "data": {
+    "node": {
+      "repository": {
+        "stargazers": {
+          "totalCount": 100
+        }
+      },
+    },
+    "result": 100
+  },
+  "result": 100,
+  "statusCode": 200
+}
+```
+
 # .env
 
 ```
 GITHUB_APP_ACCESS_TOKEN=...
+MAX_PULL_REQUEST_MERGE_AGE=30
 ```
 
 # Install Locally
@@ -109,4 +139,7 @@ curl -X POST -H "content-type:application/json" "http://localhost:8080/release" 
 
 # claim
 curl -X POST -H "content-type:application/json" "http://localhost:8080/claim" --data '{ "id": 0, "data": { "githubUser": "mktcode", "prId": "MDExOlB..." } }'
+
+# graphql
+curl -X POST -H "content-type:application/json" "http://localhost:8080/graphql" --data '{ "id": 0, "data": { "nodeId": "MDExOlB...", "nodeType": "Issue", "nodePath": "repository.stargazers.totalCount" } }'
 ```
