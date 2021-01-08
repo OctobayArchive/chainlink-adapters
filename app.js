@@ -2,6 +2,7 @@ const createRegisterRequest = require('./endpoints/register').createRequest
 const createReleaseRequest = require('./endpoints/release').createRequest
 const createClaimRequest = require('./endpoints/claim').createRequest
 const createGraphqlRequest = require('./endpoints/graphql').createRequest
+const createNotifyRequest = require('./endpoints/notify').createRequest
 
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -38,6 +39,13 @@ app.post('/graphql', (req, res) => {
   console.log('POST Data: ', req.body)
   createGraphqlRequest(req.body, (status, result) => {
     console.log('Result: ', result)
+    res.status(status).json(result)
+  })
+})
+
+app.post('/notify', (req, res) => {
+  console.log('POST Data: ', req.body)
+  createNotifyRequest(req.body, (status, result) => {
     res.status(status).json(result)
   })
 })
