@@ -3,13 +3,29 @@ const getAge = date => {
 }
 
 const getPullRequestScore = (pullRequest, githubUser) => {
+  // given:
+  // - user != repo owner
+  // - users can and will try to fake everything, from penis length and social status all the way down to pull requests
+  // - naivety * negative energy = potential abuse
+  // - critical factors: user reputation, repo reputation, repo owner reputation
+  // assumptions:
+  // - new user + new repo + new repo owner = fake
+  // - new user + new repo + old repo owner = fake
+  // - new user + old repo + old repo owner = equal chances to be fake or not
+  // - old user + new repo + new repo owner = equal chances to be fake or not
+  // - old user + new repo + old repo owner = fake
+  // - old user + old repo + old repo owner = likely not to be fake
+
+  // activity is a great indicator, for users as well as repositories
+  // reactions can be taken into account (:thumbsup)
+
   let score = 0
 
   const userAge = getAge(pullRequest.author.createdAt)
   const userFollowers = pullRequest.author.followers.totalCount
   const repoAge = getAge(pullRequest.repository.createdAt)
-  const repoStars = pullRequest.repository.stargazers.totalCount
-  const repoForks = pullRequest.repository.forks.totalCount
+  const repoStars = pullRequest.repository.stargazerCount
+  const repoForks = pullRequest.repository.forkCount
 
   if (userAge > 365) score += 1
   if (userAge > 365 * 5) score += 2

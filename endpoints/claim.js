@@ -41,7 +41,6 @@ const createRequest = (input, callback) => {
           id
           ... on PullRequest {
             id
-            mergedAt
             author {
               ... on User {
                 login,
@@ -51,17 +50,24 @@ const createRequest = (input, callback) => {
                 }
               }
             }
+            mergedAt
+            changedFiles
+            reviews {
+              totalCount
+            }
+            commits {
+              totalCount
+            }
+            comments {
+              totalCount
+            }
             repository {
               owner {
                 login
               }
               createdAt,
-              stargazers {
-                totalCount
-              }
-              forks {
-                totalCount
-              }
+              stargazerCount
+              forkCount
             }
           }
         }
