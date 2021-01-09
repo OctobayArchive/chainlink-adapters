@@ -1,5 +1,5 @@
 {
-  "name": "OctoBay GraphQL Bool",
+  "name": "OctoBay GraphQL Uint256",
   "initiators": [
     {
       "type": "runlog",
