@@ -5,6 +5,7 @@
   "description": "",
   "license": "MIT",
   "scripts": {
+    "postinstall": "cp .env.sample .env",
     "test": "./node_modules/.bin/_mocha --timeout 0",
     "start": "node app.js"
   },
