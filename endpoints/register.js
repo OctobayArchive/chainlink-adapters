@@ -26,7 +26,7 @@ const createRequest = (input, callback) => {
   const ethAddress = '0x' + BigInt(validator.validated.data.ethAddress).toString(16).padStart(40, '0')
 
   const headers = {
-    Authorization: 'bearer ' + process.env.GITHUB_APP_ACCESS_TOKEN
+    Authorization: 'bearer ' + process.env.GITHUB_PERSONAL_ACCESS_TOKEN
   }
 
   // Axios config

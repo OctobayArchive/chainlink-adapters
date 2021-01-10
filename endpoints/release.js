@@ -26,7 +26,7 @@ const createRequest = (input, callback) => {
   const issueId = validator.validated.data.issueId
 
   const headers = {
-    Authorization: 'bearer ' + process.env.GITHUB_APP_ACCESS_TOKEN
+    Authorization: 'bearer ' + process.env.GITHUB_PERSONAL_ACCESS_TOKEN
   }
 
   // Axios config

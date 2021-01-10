@@ -47,7 +47,7 @@ const createRequest = (input, callback) => {
   const config = {
     url: 'https://api.github.com/graphql',
     headers: {
-      Authorization: 'bearer ' + process.env.GITHUB_APP_ACCESS_TOKEN
+      Authorization: 'bearer ' + process.env.GITHUB_PERSONAL_ACCESS_TOKEN
     },
     method: 'POST',
     data: { query }
