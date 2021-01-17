@@ -4,6 +4,7 @@ const createClaimRequest = require('./endpoints/claim').createRequest
 const createGraphqlRequest = require('./endpoints/graphql').createRequest
 const createNotifyRequest = require('./endpoints/notify').createRequest
 const createTwitterPostRequest = require('./endpoints/twitter-post').createRequest
+const createTwitterFollowersRequest = require('./endpoints/twitter-followers').createRequest
 
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -54,6 +55,13 @@ app.post('/notify', (req, res) => {
 app.post('/twitter-post', (req, res) => {
   console.log('POST Data: ', req.body)
   createTwitterPostRequest(req.body, (status, result) => {
+    res.status(status).json(result)
+  })
+})
+
+app.post('/twitter-followers', (req, res) => {
+  console.log('POST Data: ', req.body)
+  createTwitterFollowersRequest(req.body, (status, result) => {
     res.status(status).json(result)
   })
 })
