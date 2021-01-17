@@ -66,7 +66,7 @@ const createRequest = (input, callback) => {
 
       if (response.data.node.url) {
         const tweet = await twApp.post('statuses/update', {
-          status: `${amountFormatted} #ETH was deposited on this issue: ${response.data.node.url} #ethereum #github #opensource #octobay`
+          status: `${amountFormatted} #ETH for solving this issue: ${response.data.node.url} #ethereum #github #opensource #octobay`
         })
         delete response.data.node
         response.data.result = tweet.id
