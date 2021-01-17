@@ -1,0 +1,16 @@
+{
+  "name": "OctoBay Twitter Post",
+  "initiators": [
+    {
+      "type": "runlog",
+      "params": {
+        "address": "YOUR_ORACLE_CONTRACT_ADDRESS"
+      }
+    }
+  ],
+  "tasks": [
+    { "type": "octobay-twitter-post" },
+    { "type": "ethbytes32" },
+    { "type": "ethtx" }
+  ]
+}
