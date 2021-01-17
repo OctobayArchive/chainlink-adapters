@@ -34,7 +34,7 @@ const createRequest = (input, callback) => {
   const jobRunID = validator.validated.id
   const url = 'https://api.github.com/graphql'
   const issueId = validator.validated.data.issueId
-  const amountFormatted = Number(web3.utils.fromWei(validator.validated.data.amount, 'ether'))
+  const amountFormatted = Number(web3.utils.fromWei(validator.validated.data.amount.toString(), 'ether'))
 
   const headers = {
     Authorization: 'bearer ' + process.env.GITHUB_PERSONAL_ACCESS_TOKEN
