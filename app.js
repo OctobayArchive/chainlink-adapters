@@ -48,6 +48,7 @@ app.post('/graphql', (req, res) => {
 app.post('/notify', (req, res) => {
   console.log('POST Data: ', req.body)
   createNotifyRequest(req.body, (status, result) => {
+    console.log('Result: ', result)
     res.status(status).json(result)
   })
 })
@@ -55,6 +56,7 @@ app.post('/notify', (req, res) => {
 app.post('/twitter-post', (req, res) => {
   console.log('POST Data: ', req.body)
   createTwitterPostRequest(req.body, (status, result) => {
+    console.log('Result: ', result)
     res.status(status).json(result)
   })
 })
@@ -62,6 +64,7 @@ app.post('/twitter-post', (req, res) => {
 app.post('/twitter-followers', (req, res) => {
   console.log('POST Data: ', req.body)
   createTwitterFollowersRequest(req.body, (status, result) => {
+    console.log('Result: ', result)
     res.status(status).json(result)
   })
 })
