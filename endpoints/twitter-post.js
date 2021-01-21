@@ -76,7 +76,7 @@ const createRequest = (input, callback) => {
       }
     })
     .catch(error => {
-      callback(500, Requester.errored(jobRunID, error))
+      callback(500, Requester.errored(jobRunID, JSON.stringify(error)))
     })
 }
 

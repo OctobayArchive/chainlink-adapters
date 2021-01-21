@@ -37,7 +37,7 @@ const createRequest = (input, callback) => {
       cache.put('twitter-followers-' + accountId, response.data.result, 60 * 1000)
       callback(200, Requester.success(jobRunID, response))
     }).catch(error => {
-      callback(500, Requester.errored(jobRunID, error))
+      callback(500, Requester.errored(jobRunID, JSON.stringify(error)))
     })
   }
 }
