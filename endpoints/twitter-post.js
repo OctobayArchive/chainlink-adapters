@@ -69,7 +69,7 @@ const createRequest = (input, callback) => {
           status: `${amountFormatted} #ETH for solving this issue: ${response.data.node.url} #ethereum #github #opensource #octobay`
         })
         delete response.data.node
-        response.data.result = tweet.id
+        response.data.result = tweet.id_str
         callback(response.status, Requester.success(jobRunID, response))
       } else {
         callback(500, Requester.errored(jobRunID, { error: `Issue not found: ${issueId}` }))
