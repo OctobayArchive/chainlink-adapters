@@ -7,7 +7,7 @@ Template: https://github.com/thodges-gh/CL-EA-NodeJS-Template
 ### Input Params
 
 - `githubUser`: The GitHub user trying to register
-- `ethAddress`: The ETH address the user wants to connect to
+- `ethAddress`: The ETH address the user wants to connect to (as a decimal representation)
 
 ### Output
 
@@ -164,7 +164,7 @@ yarn start
 
 ```bash
 # register
-curl -X POST -H "content-type:application/json" "http://localhost:8080/register" --data '{ "id": 0, "data": { "githubUser": "mktcode", "ethAddress": "0x2771..." } }'
+curl -X POST -H "content-type:application/json" "http://localhost:8080/register" --data '{ "id": 0, "data": { "githubUser": "mktcode", "ethAddress": "1234..." } }'
 
 # release
 curl -X POST -H "content-type:application/json" "http://localhost:8080/release" --data '{ "id": 0, "data": { "githubUser": "mktcode", "issueId": "MDExOlB..." } }'
