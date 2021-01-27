@@ -1,6 +1,6 @@
 require('dotenv').config()
 const { Requester, Validator } = require('@chainlink/external-adapter')
-const { getPullRequestScore, validatePullRequest } = require('./../helpers')
+const graphqlUrl = 'https://api.github.com/graphql'
 
 // Define custom error scenarios for the API.
 // Return true for the adapter to retry.
@@ -15,93 +15,89 @@ const customError = (data) => {
 // should be required.
 const customParams = {
   githubUser: ['githubUser'],
-  prId: ['prId']
+  issueId: ['issueId']
+}
+
+const headers = {
+  Authorization: 'bearer ' + process.env.GITHUB_PERSONAL_ACCESS_TOKEN
+}
+
+const getIssueClosedEvents = (issueId, after, result = { closedEvents: [], body: '' }) => {
+  return Requester.request({
+    url: graphqlUrl,
+    data: {
+      query: `query {
+        rateLimit {
+          limit
+          cost
+          remaining
+          resetAt
+        }
+        node(id:"${issueId}") {
+          ... on Issue {
+            body
+            timelineItems(itemTypes: [CLOSED_EVENT], first: 1${after ? ', after: "' + after + '"' : ''}) {
+              pageInfo {
+                hasNextPage
+                endCursor
+              }
+              nodes {
+                ... on ClosedEvent {
+                  closer {
+                    ... on PullRequest {
+                      author {
+                        login
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }`
+    },
+    method: 'POST',
+    headers
+  }, customError).then(res => {
+    result.body = res.data.data.node.body
+    result.closedEvents.push(...res.data.data.node.timelineItems.nodes)
+    if (res.data.data.node.timelineItems.pageInfo.hasNextPage) {
+      return getIssueClosedEvents(issueId, res.data.data.node.timelineItems.pageInfo.endCursor, result)
+    } else {
+      return result
+    }
+  }).catch(e => console.log(e))
 }
 
 const createRequest = (input, callback) => {
   // The Validator helps you validate the Chainlink request data
   const validator = new Validator(callback, input, customParams)
   const jobRunID = validator.validated.id
-  const url = 'https://api.github.com/graphql'
   const githubUser = validator.validated.data.githubUser
-  const prId = validator.validated.data.prId
-
-  const headers = {
-    Authorization: 'bearer ' + process.env.GITHUB_PERSONAL_ACCESS_TOKEN
-  }
-
-  // Axios config
-  const config = {
-    url,
-    headers,
-    method: 'POST',
-    data: {
-      query: `query {
-        node (id: "${prId}") {
-          id
-          ... on PullRequest {
-            id
-            author {
-              ... on User {
-                login,
-                createdAt,
-                followers {
-                  totalCount
-                }
-              }
-            }
-            mergedAt
-            changedFiles
-            reviews {
-              totalCount
-            }
-            commits {
-              totalCount
-            }
-            comments {
-              totalCount
-            }
-            repository {
-              owner {
-                login
-              }
-              createdAt,
-              stargazerCount
-              forkCount
-            }
-          }
-        }
-      }`
-    }
-  }
+  const issueId = validator.validated.data.issueId
 
   // The Requester allows API calls be retry in case of timeout
   // or connection failure
-  Requester.request(config, customError)
-    .then(response => {
-      // remove redundant object node
-      response.data = response.data.data
-      // rename node to pullRequest in response object
-      response.data.pullRequest = response.data.node
-      delete response.data.node
-
-      // calculate pull request score and check if pull request is valid (repo owner / merge data)
-      response.data.pullRequest.score = getPullRequestScore(response.data.pullRequest, githubUser)
-      const pullRequestValidationError = validatePullRequest(response.data.pullRequest, githubUser)
-
-      if (pullRequestValidationError) {
-        // Error 1: GitHub user and repository owner are the same
-        // Error 2: Pull request was merged too long ago
-        // Error 3: Score is too low (= 0)
-        callback(500, Requester.errored(jobRunID, { pullRequestValidationError }))
-      } else {
-        response.data.result = response.data.pullRequest.score
-        callback(response.status, Requester.success(jobRunID, response))
+  getIssueClosedEvents(issueId).then(result => {
+    let releasedByPullRequest = false
+    result.closedEvents.forEach(closedEvent => {
+      if (closedEvent.closer && closedEvent.closer.author.login === githubUser) {
+        releasedByPullRequest = true
       }
     })
-    .catch(error => {
-      callback(500, Requester.errored(jobRunID, JSON.stringify(error)))
-    })
+
+    const releaseCommandRegex = new RegExp(`^(\\s+)?@OctoBay([ ]+)release([ ]+)to([ ]+)@${githubUser}(\\s+)?$`, 'igm')
+    const releasedByCommand = !!result.body.match(releaseCommandRegex)
+
+    if (releasedByCommand || releasedByPullRequest) {
+      callback(200, Requester.success(jobRunID, { status: 200, data: { result: true } }))
+    } else {
+      callback(500, Requester.errored(jobRunID, 'Unauthorized to claim.'))
+    }
+  }).catch(error => {
+    callback(500, Requester.errored(jobRunID, JSON.stringify(error)))
+  })
 }
 
 // This is a wrapper to allow the function to work with
