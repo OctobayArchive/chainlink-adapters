@@ -1,4 +1,4 @@
-# Chainlink NodeJS External Adapter for OctoBay
+# Chainlink NodeJS External Adapters for OctoBay
 
 Template: https://github.com/thodges-gh/CL-EA-NodeJS-Template
 
