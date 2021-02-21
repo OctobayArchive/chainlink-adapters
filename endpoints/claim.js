@@ -1,5 +1,5 @@
 require('dotenv').config()
-const { claimAdapter } = require('@octobay/adapters')
+const { bountyIsReleased } = require('@octobay/adapters')
 const { Requester, Validator } = require('@chainlink/external-adapter')
 
 // Define custom parameters to be used by the adapter.
@@ -20,7 +20,7 @@ const createRequest = (input, callback) => {
 
   // The Requester allows API calls be retry in case of timeout
   // or connection failure
-  claimAdapter(githubUser, issueId).then(result => {
+  bountyIsReleased(githubUser, issueId).then(result => {
     if (result.releasedByCommand || result.releasedByPullRequest) {
       callback(200, Requester.success(jobRunID, { status: 200, data: { result: true } }))
     } else {
