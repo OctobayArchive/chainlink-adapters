@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@chainlink/external-adapter": "^0.2.3",
-    "@octobay/adapters": "^0.0.1",
+    "@octobay/adapters": "0.0.2",
     "dotenv": "^8.2.0",
     "memory-cache": "^0.2.0",
     "twitter-lite": "^0.14.0",
