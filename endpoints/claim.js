@@ -1,13 +1,6 @@
 require('dotenv').config()
+const { claimAdapter } = require('@octobay/adapters')
 const { Requester, Validator } = require('@chainlink/external-adapter')
-const graphqlUrl = 'https://api.github.com/graphql'
-
-// Define custom error scenarios for the API.
-// Return true for the adapter to retry.
-const customError = (data) => {
-  if (data.Response === 'Error') return true
-  return false
-}
 
 // Define custom parameters to be used by the adapter.
 // Extra parameters can be stated in the extra object,
@@ -16,58 +9,6 @@ const customError = (data) => {
 const customParams = {
   githubUser: ['githubUser'],
   issueId: ['issueId']
-}
-
-const headers = {
-  Authorization: 'bearer ' + process.env.GITHUB_PERSONAL_ACCESS_TOKEN
-}
-
-const getIssueClosedEvents = (issueId, after, result = { closedEvents: [], body: '' }) => {
-  return Requester.request({
-    url: graphqlUrl,
-    data: {
-      query: `query {
-        rateLimit {
-          limit
-          cost
-          remaining
-          resetAt
-        }
-        node(id:"${issueId}") {
-          ... on Issue {
-            body
-            timelineItems(itemTypes: [CLOSED_EVENT], first: 1${after ? ', after: "' + after + '"' : ''}) {
-              pageInfo {
-                hasNextPage
-                endCursor
-              }
-              nodes {
-                ... on ClosedEvent {
-                  closer {
-                    ... on PullRequest {
-                      author {
-                        login
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }`
-    },
-    method: 'POST',
-    headers
-  }, customError).then(res => {
-    result.body = res.data.data.node.body
-    result.closedEvents.push(...res.data.data.node.timelineItems.nodes)
-    if (res.data.data.node.timelineItems.pageInfo.hasNextPage) {
-      return getIssueClosedEvents(issueId, res.data.data.node.timelineItems.pageInfo.endCursor, result)
-    } else {
-      return result
-    }
-  }).catch(e => console.log(e))
 }
 
 const createRequest = (input, callback) => {
@@ -79,18 +20,8 @@ const createRequest = (input, callback) => {
 
   // The Requester allows API calls be retry in case of timeout
   // or connection failure
-  getIssueClosedEvents(issueId).then(result => {
-    let releasedByPullRequest = false
-    result.closedEvents.forEach(closedEvent => {
-      if (closedEvent.closer && closedEvent.closer.author.login === githubUser) {
-        releasedByPullRequest = true
-      }
-    })
-
-    const releaseCommandRegex = new RegExp(`^(\\s+)?@OctoBay([ ]+)release([ ]+)to([ ]+)@${githubUser}(\\s+)?$`, 'igm')
-    const releasedByCommand = !!result.body.match(releaseCommandRegex)
-
-    if (releasedByCommand || releasedByPullRequest) {
+  claimAdapter(githubUser, issueId).then(result => {
+    if (result.releasedByCommand || result.releasedByPullRequest) {
       callback(200, Requester.success(jobRunID, { status: 200, data: { result: true } }))
     } else {
       callback(500, Requester.errored(jobRunID, 'Unauthorized to claim.'))
