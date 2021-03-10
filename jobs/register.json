@@ -10,7 +10,7 @@
   ],
   "tasks": [
     { "type": "octobay-register" },
-    { "type": "ethbool" },
+    { "type": "ethbytes32" },
     { "type": "ethtx" }
   ]
 }
