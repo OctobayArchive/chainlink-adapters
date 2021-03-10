@@ -59,7 +59,6 @@ const createRequest = (input, callback) => {
       // remove redundant object node
       response.data = response.data.data
 
-
       if (!response.data.node) {
         // Error 1: Repository not found
         callback(500, Requester.errored(jobRunID, { registrationError: `Repository (${ethAddress}) not found.` }))
