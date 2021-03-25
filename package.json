@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@chainlink/external-adapter": "^0.2.3",
-    "@octobay/adapters": "^0.0.4",
+    "@octobay/adapters": "^0.0.9",
     "dotenv": "^8.2.0",
     "memory-cache": "^0.2.0",
     "truncate-utf8-bytes": "^1.0.2",

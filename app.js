@@ -4,6 +4,8 @@ const createGraphqlRequest = require('./endpoints/graphql').createRequest
 const createNotifyRequest = require('./endpoints/notify').createRequest
 const createTwitterPostRequest = require('./endpoints/twitter-post').createRequest
 const createTwitterFollowersRequest = require('./endpoints/twitter-followers').createRequest
+const createCheckOwnershipRequest = require('./endpoints/check-ownership').createRequest
+
 
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -55,6 +57,14 @@ app.post('/twitter-post', (req, res) => {
 app.post('/twitter-followers', (req, res) => {
   console.log('POST Data: ', req.body)
   createTwitterFollowersRequest(req.body, (status, result) => {
+    console.log('Result: ', result)
+    res.status(status).json(result)
+  })
+})
+
+app.post('/check-ownership', (req, res) => {
+  console.log('POST Data: ', req.body)
+  createCheckOwnershipRequest(req.body, (status, result) => {
     console.log('Result: ', result)
     res.status(status).json(result)
   })
