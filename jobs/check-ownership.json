@@ -1,0 +1,16 @@
+{
+  "name": "Check Org or Repo Ownership",
+  "initiators": [
+    {
+      "type": "runlog",
+      "params": {
+        "address": "YOUR_ORACLE_CONTRACT_ADDRESS"
+      }
+    }
+  ],
+  "tasks": [
+    { "type": "check-ownership" },
+    { "type": "ethbytes32" },
+    { "type": "ethtx" }
+  ]
+}
