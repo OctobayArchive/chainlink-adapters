@@ -10,7 +10,7 @@
   ],
   "tasks": [
     { "type": "check-ownership" },
-    { "type": "ethbytes32" },
+    { "type": "ethbool" },
     { "type": "ethtx" }
   ]
 }

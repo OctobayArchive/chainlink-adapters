@@ -99,7 +99,7 @@ const createRequest = (input, callback) => {
         const ownerType = nodeType == "Repository" ? response.data.node.owner.__typename : null
 
         if (nodeType == "Repository" && ownerType == "User") {
-          const result = response.data.node.owner.id == githubUserId ? "true" : "false"
+          const result = response.data.node.owner.id == githubUserId ? true : false
           callback(response.status, Requester.success(jobRunID, {data: {result: result}}))
         } else {
           const orgLogin = nodeType == "Organization" ? reponse.data.node.login : response.data.node.owner.login
@@ -111,7 +111,7 @@ const createRequest = (input, callback) => {
               if (response.data.node.__typename != "User") {
                 callback(500, Requester.errored(jobRunID, { checkOwnershipError: `Node (${githubUserId}) is not a User.` }))
               } else {
-                const result = response.data.node.organization ? "true" : "false"
+                const result = response.data.node.organization ? true : false
                 callback(response.status, Requester.success(jobRunID, {data: {result: result}}))
               }      
             })
