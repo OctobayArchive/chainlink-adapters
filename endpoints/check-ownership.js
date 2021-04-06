@@ -99,8 +99,11 @@ const createRequest = (input, callback) => {
         const ownerType = nodeType === 'Repository' ? response.data.node.owner.__typename : null
 
         if (nodeType === 'Repository' && ownerType === 'User') {
-          const result = response.data.node.owner.id === githubUserId
-          callback(response.status, Requester.success(jobRunID, { data: { result: result } }))
+          if (response.data.node.owner.id !== githubUserId) {
+            callback(500, Requester.errored(jobRunID, { checkOwnershipError: `Repository (${repoOrgId}) is not owned by User (${githubUserId}).` }))
+          } else {
+            callback(200, Requester.success(jobRunID, { status: 200, data: { result: true } }))
+          }
         } else {
           const orgLogin = nodeType === 'Organization' ? response.data.node.login : response.data.node.owner.login
           Requester.request(checkUserMember(orgLogin), customError)
@@ -111,8 +114,11 @@ const createRequest = (input, callback) => {
               if (response.data.node.__typename !== 'User') {
                 callback(500, Requester.errored(jobRunID, { checkOwnershipError: `Node (${githubUserId}) is not a User.` }))
               } else {
-                const result = !!response.data.node.organization
-                callback(response.status, Requester.success(jobRunID, { data: { result: result } }))
+                if (!response.data.node.organization) {
+                  callback(500, Requester.errored(jobRunID, { checkOwnershipError: `Node (${githubUserId}) is not an Organization.` }))
+                } else {
+                  callback(200, Requester.success(jobRunID, { status: 200, data: { result: true } }))
+                }
               }
             })
             .catch(error => {
