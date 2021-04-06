@@ -9,7 +9,7 @@
     }
   ],
   "tasks": [
-    { "type": "check-ownership" },
+    { "type": "octobay-check-ownership" },
     { "type": "ethbool" },
     { "type": "ethtx" }
   ]
