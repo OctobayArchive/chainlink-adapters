@@ -93,32 +93,32 @@ const createRequest = (input, callback) => {
       response.data = response.data.data
 
       const nodeType = response.data.node.__typename
-      if (nodeType != "Repository" && nodeType != "Organization") {
+      if (nodeType !== 'Repository' && nodeType !== 'Organization') {
         callback(500, Requester.errored(jobRunID, { checkOwnershipError: `Node (${repoOrgId}) is not a Repository or Organization.` }))
       } else {
-        const ownerType = nodeType == "Repository" ? response.data.node.owner.__typename : null
+        const ownerType = nodeType === 'Repository' ? response.data.node.owner.__typename : null
 
-        if (nodeType == "Repository" && ownerType == "User") {
-          const result = response.data.node.owner.id == githubUserId ? true : false
-          callback(response.status, Requester.success(jobRunID, {data: {result: result}}))
+        if (nodeType === 'Repository' && ownerType === 'User') {
+          const result = response.data.node.owner.id === githubUserId
+          callback(response.status, Requester.success(jobRunID, { data: { result: result } }))
         } else {
-          const orgLogin = nodeType == "Organization" ? reponse.data.node.login : response.data.node.owner.login
+          const orgLogin = nodeType === 'Organization' ? response.data.node.login : response.data.node.owner.login
           Requester.request(checkUserMember(orgLogin), customError)
             .then(response => {
               // remove redundant object node
               response.data = response.data.data
-        
-              if (response.data.node.__typename != "User") {
+
+              if (response.data.node.__typename !== 'User') {
                 callback(500, Requester.errored(jobRunID, { checkOwnershipError: `Node (${githubUserId}) is not a User.` }))
               } else {
-                const result = response.data.node.organization ? true : false
-                callback(response.status, Requester.success(jobRunID, {data: {result: result}}))
-              }      
+                const result = !!response.data.node.organization
+                callback(response.status, Requester.success(jobRunID, { data: { result: result } }))
+              }
             })
             .catch(error => {
               console.log(error)
               callback(500, Requester.errored(jobRunID, JSON.stringify(error)))
-            })            
+            })
         }
       }
     })
