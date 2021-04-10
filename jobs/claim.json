@@ -10,7 +10,7 @@
   ],
   "tasks": [
     { "type": "octobay-claim" },
-    { "type": "ethuint256" },
+    { "type": "ethbool" },
     { "type": "ethtx" }
   ]
 }
