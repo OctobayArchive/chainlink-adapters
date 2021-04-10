@@ -6,7 +6,6 @@ const createTwitterPostRequest = require('./endpoints/twitter-post').createReque
 const createTwitterFollowersRequest = require('./endpoints/twitter-followers').createRequest
 const createCheckOwnershipRequest = require('./endpoints/check-ownership').createRequest
 
-
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
