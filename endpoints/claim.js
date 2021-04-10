@@ -7,7 +7,7 @@ const { Requester, Validator } = require('@chainlink/external-adapter')
 // with a Boolean value indicating whether or not they
 // should be required.
 const customParams = {
-  githubUser: ['githubUser'],
+  githubUserId: ['githubUserId'],
   issueId: ['issueId']
 }
 
@@ -15,12 +15,12 @@ const createRequest = (input, callback) => {
   // The Validator helps you validate the Chainlink request data
   const validator = new Validator(callback, input, customParams)
   const jobRunID = validator.validated.id
-  const githubUser = validator.validated.data.githubUser
+  const githubUserId = validator.validated.data.githubUserId
   const issueId = validator.validated.data.issueId
 
   // The Requester allows API calls be retry in case of timeout
   // or connection failure
-  bountyIsReleased(githubUser, issueId).then(result => {
+  bountyIsReleased(githubUserId, issueId).then(result => {
     if (result.releasedByCommand || result.releasedByPullRequest) {
       callback(200, Requester.success(jobRunID, { status: 200, data: { result: true } }))
     } else {
