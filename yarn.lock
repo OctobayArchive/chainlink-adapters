@@ -205,10 +205,10 @@
     "@ethersproject/properties" "^5.0.7"
     "@ethersproject/strings" "^5.0.8"
 
-"@octobay/adapters@^0.0.10":
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@octobay/adapters/-/adapters-0.0.10.tgz#97f32b0fc934588b38d6b92468cbba7336e0c5f4"
-  integrity sha512-RxX26DkBmNqFIsm2g121+OO7SQK06zjGhxSn00otU7Js2eGRKS0ktrGXvS5F8nM3uuZ8dy9f9od5myOj6kUGpQ==
+"@octobay/adapters@^0.0.11":
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/@octobay/adapters/-/adapters-0.0.11.tgz#c14ef292631ff790048b2879fabf404231cdf595"
+  integrity sha512-2GhKpKrzURaXaZLJIRGHFVSYuKLknVguyPdZ4jCCrhonWRrqhZb6RksCka6hBIxbOsKOndeotTI5OKcKO0Rdvw==
   dependencies:
     axios "^0.21.1"
     axios-retry "^3.1.9"
