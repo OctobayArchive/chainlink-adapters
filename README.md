@@ -159,6 +159,8 @@ git pull
 yarn
 ```
 
+Check `.env.sample` for possible new env vars you need to set.
+
 ## Run
 
 Natively run the application (defaults to port 8080):
