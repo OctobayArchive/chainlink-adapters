@@ -6,7 +6,7 @@ Template: https://github.com/thodges-gh/CL-EA-NodeJS-Template
 
 ### Input Params
 
-- `githubUser`: The GitHub user trying to register
+- `githubUserId`: The GraphQL Node ID of the GitHub user trying to register
 - `ethAddress`: The ETH address the user wants to connect to (as a decimal representation)
 
 ### Output
@@ -15,18 +15,18 @@ Template: https://github.com/thodges-gh/CL-EA-NodeJS-Template
 {
   "jobRunID": 0,
   "data": {
-    "result": true
+    "result": 'address name'
   },
-  "result": true,
+  "result": 'address name',
   "statusCode": 200
 }
 ```
 
-## /release
+## /claim
 
 ### Input Params
 
-- `githubUser`: The GitHub user that owns the issue and wants to release its deposits
+- `githubUserId`: The GraphQL Node ID of the GitHub user trying to claim the bounty
 - `issueId`: The GrapQL node ID of the issue
 
 ### Output
@@ -42,12 +42,12 @@ Template: https://github.com/thodges-gh/CL-EA-NodeJS-Template
 }
 ```
 
-## /claim
+## /check-ownership
 
 ### Input Params
 
-- `githubUser`: The GitHub user trying to claim the pull request
-- `prId`: The GrapQL node ID of the pull request
+- `githubUserId`: The GraphQL Node ID of the GitHub user
+- `repoOrgId`: The GrapQL node ID of the repository or organization
 
 ### Output
 
@@ -55,16 +55,9 @@ Template: https://github.com/thodges-gh/CL-EA-NodeJS-Template
 {
   "jobRunID": 0,
   "data": {
-    "pullRequest": {
-      "id": "MDExOlB1bGxSZXF1ZXN0NDc2NTg4Nzg2",
-      "mergedAt": "2020-09-04T15:24:16Z",
-      "author": { ... },
-      "repository": { ... },
-      "score": 43
-    },
-    "result": 43
+    "result": true
   },
-  "result": 43,
+  "result": true,
   "statusCode": 200
 }
 ```
@@ -122,8 +115,13 @@ Template: https://github.com/thodges-gh/CL-EA-NodeJS-Template
 # .env
 
 ```
-GITHUB_APP_ACCESS_TOKEN=...
-MAX_PULL_REQUEST_MERGE_AGE=30
+GITHUB_PERSONAL_ACCESS_TOKEN=
+MAX_PULL_REQUEST_MERGE_AGE=99999
+TWITTER_API_KEY=
+TWITTER_API_SECRET=
+TWITTER_APP_ACCESS_TOKEN=
+TWITTER_APP_SECRET=
+TWITTER_APP_BEARER_TOKEN=
 ```
 
 # .env for notify
@@ -138,9 +136,11 @@ OPIN_USERNAME=...
 
 # Install Locally
 
-Install dependencies:
+Clone and install dependencies:
 
 ```bash
+git clone https://github.com/octobay/chainlink-adapters octobay-chainlink-adapters
+cd octobay-chainlink-adapters
 yarn
 ```
 
@@ -152,29 +152,34 @@ Run the local tests:
 yarn test
 ```
 
-Natively run the application (defaults to port 8080):
+## Update
+
+```bash
+git pull
+yarn
+```
 
 ## Run
+
+Natively run the application (defaults to port 8080):
 
 ```bash
 yarn start
 ```
 
-## Call
+## Example Calls
 
 ```bash
 # register
-curl -X POST -H "content-type:application/json" "http://localhost:8080/register" --data '{ "id": 0, "data": { "githubUser": "mktcode", "ethAddress": "1234..." } }'
-
-# release
-curl -X POST -H "content-type:application/json" "http://localhost:8080/release" --data '{ "id": 0, "data": { "githubUser": "mktcode", "issueId": "MDExOlB..." } }'
+# Note that the ethAddress is passed as an integer.
+curl -X POST -H "content-type:application/json" "http://localhost:8080/register" --data '{ "id": 0, "data": { "githubUserId": "MDQ6VXNlcjY3OTI1Nzg=", "ethAddress": "1234..." } }'
 
 # claim
-curl -X POST -H "content-type:application/json" "http://localhost:8080/claim" --data '{ "id": 0, "data": { "githubUser": "mktcode", "prId": "MDExOlB..." } }'
+curl -X POST -H "content-type:application/json" "http://localhost:8080/claim" --data '{ "id": 0, "data": { "githubUserId": "MDQ6VXNlcjY3OTI1Nzg=", "issueId": "MDExOlB..." } }'
 
 # graphql
 curl -X POST -H "content-type:application/json" "http://localhost:8080/graphql" --data '{ "id": 0, "data": { "nodeId": "MDExOlB...", "nodeType": "Issue", "nodePath": "repository.stargazers.totalCount" } }'
 
 # notify
-curl -X POST -H "content-type:application/json" "http://localhost:8080/notify" --data '{ "id": 0, "data": {"payment_to":"PatrickAlphaC", "payment_from":"opintester", "amount":1, "currency":"LINK" } }'
+curl -X POST -H "content-type:application/json" "http://localhost:8080/notify" --data '{ "id": 0, "data": { "payment_to":"PatrickAlphaC", "payment_from": "opintester", "amount": 1, "currency": "LINK" } }'
 ```
